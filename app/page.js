@@ -35,7 +35,10 @@ export default function WebPanel() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
+        let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
+        if (apiUrl && !apiUrl.endsWith('/api') && !apiUrl.endsWith('/api/')) {
+          apiUrl = apiUrl.replace(/\/$/, '') + '/api';
+        }
         const response = await fetch(`${apiUrl}/categories`);
         const result = await response.json();
         if (result.success && result.data && result.data.length > 0) {
@@ -50,7 +53,10 @@ export default function WebPanel() {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
+        let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
+        if (apiUrl && !apiUrl.endsWith('/api') && !apiUrl.endsWith('/api/')) {
+          apiUrl = apiUrl.replace(/\/$/, '') + '/api';
+        }
         const response = await fetch(`${apiUrl}/products?limit=500`);
         const result = await response.json();
         
