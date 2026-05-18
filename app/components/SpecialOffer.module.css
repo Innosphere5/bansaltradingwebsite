@@ -1,0 +1,269 @@
+.wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: var(--spacing-xl) auto;
+  padding: 0 var(--spacing-md);
+}
+
+.card {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #00362b 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--spacing-xl);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.radialGlow {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(217, 119, 6, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: var(--spacing-2xl);
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.promoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--secondary-color);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.badgeIcon {
+  animation: spinSlow 6s linear infinite;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 850;
+  line-height: 1.2;
+  color: white;
+}
+
+.discountHighlight {
+  color: var(--secondary-color);
+  background: linear-gradient(90deg, var(--secondary-color) 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  color: #a7f3d0; /* Soft mint green */
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.description strong {
+  color: white;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.95rem;
+  color: #e6f0ed;
+}
+
+.benefitIcon {
+  color: var(--secondary-color);
+  flex-shrink: 0;
+}
+
+/* Progress Tracker Section */
+.progressSection {
+  display: flex;
+  justify-content: center;
+}
+
+.trackerCard {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.trackerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.trackerLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #cbd5e1;
+}
+
+.trackerValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+}
+
+.targetTotal {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.progressBg {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--secondary-color) 0%, #fbbf24 100%);
+  border-radius: var(--radius-full);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glowingFill {
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+.trackerFooter {
+  margin-top: var(--spacing-xs);
+}
+
+.unlockedBox, .lockedBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.savingsTxt {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.greenText {
+  color: #10b981;
+  font-size: 1.1rem;
+}
+
+.pendingTxt {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.pendingTxt strong {
+  color: var(--secondary-color);
+}
+
+.claimBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  background: #10b981;
+  color: white;
+  padding: 12px var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.claimBtn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+}
+
+.shopBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  background: var(--secondary-color);
+  color: white;
+  padding: 12px var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all var(--transition-speed);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+}
+
+.shopBtn:hover {
+  background: #b45309;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(217, 119, 6, 0.3);
+}
+
+@media (max-width: 992px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+}
+
+@media (max-width: 576px) {
+  .card {
+    padding: var(--spacing-lg);
+  }
+  .title {
+    font-size: 1.75rem;
+  }
+  .trackerHeader {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    align-items: flex-start;
+  }
+  .trackerValue {
+    font-size: 1.25rem;
+  }
+}

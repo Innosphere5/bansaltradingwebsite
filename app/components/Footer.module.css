@@ -1,0 +1,261 @@
+.footer {
+  background-color: #003a2e;
+  color: white;
+  padding: 80px 0;
+  margin-top: auto;
+  position: relative;
+  /* FIXED: removed overflow: hidden — it was clipping grid children */
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: -150px;
+  right: -150px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+  /* FIXED: z-index below content so it doesn't block clicks */
+  z-index: 0;
+}
+
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+  position: relative;
+  z-index: 2;
+}
+
+.mainGrid {
+  display: grid;
+  /* FIXED: switched to named fixed-feel columns that don't collapse.
+     Using minmax prevents the last column being squeezed off-screen. */
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr) minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 40px;
+  margin-bottom: 40px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* FIXED: all direct grid children need min-width: 0 to prevent blowout */
+.mainGrid>* {
+  min-width: 0;
+}
+
+.brandSection .logo {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.brandSection .logo::after {
+  content: 'Wholesale';
+  font-size: 10px;
+  text-transform: uppercase;
+  background: #fbbf24;
+  color: #003a2e;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.6;
+  /* FIXED: raised opacity from 0.7 — too dark on #003a2e background */
+  opacity: 0.85;
+  margin-bottom: var(--spacing-xl);
+  max-width: 340px;
+}
+
+.socials {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.socialIcon {
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.socialIcon:hover {
+  background: white;
+  color: #003a2e;
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.linkGroup h4,
+.contactSection h4 {
+  font-size: 1.15rem;
+  /* FIXED: 750 is invalid — nearest valid value is 700 */
+  font-weight: 700;
+  margin-bottom: var(--spacing-xl);
+  color: #fbbf24;
+  letter-spacing: 0.02em;
+}
+
+.linkGroup ul {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  /* FIXED: reset default browser list padding/margin */
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.linkGroup a {
+  font-size: 1rem;
+  /* FIXED: raised from 0.65 — links were nearly invisible */
+  opacity: 0.8;
+  transition: all 0.25s ease;
+  display: inline-block;
+  color: white;
+  text-decoration: none;
+}
+
+.linkGroup a:hover {
+  opacity: 1;
+  color: #fbbf24;
+  transform: translateX(4px);
+}
+
+.contactSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 1rem;
+  opacity: 0.85;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--radius-md);
+  transition: background 0.3s;
+  /* FIXED: prevent text from overflowing the grid column */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.contactItem:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.contactItem svg {
+  color: #fbbf24;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.contactItem span {
+  flex: 1;
+  /* FIXED: prevent long email/phone text blowing out the column */
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.bottomBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+.paymentMethods {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+}
+
+.paymentTag {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* FIXED: 1200px breakpoint — corrected column span logic */
+@media (max-width: 1200px) {
+  .mainGrid {
+    /* Brand + 2 link groups on row 1, contact on row 2 */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  .brandSection {
+    /* FIXED: span full row but only when there are 3 columns */
+    grid-column: 1 / -1;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Contact section spans full width on its own row */
+  .contactSection {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  /* Re-apply the h4 spanning above the contact grid */
+  .contactSection h4 {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    /* Extra bottom padding for mobile nav overlay */
+    padding-bottom: 120px;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xl);
+  }
+
+  .brandSection {
+    grid-column: 1 / -1;
+  }
+
+  /* FIXED: reset contact grid on mobile */
+  .contactSection {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .description {
+    max-width: none;
+  }
+
+  .bottomBar {
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    text-align: center;
+  }
+}

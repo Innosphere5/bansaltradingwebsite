@@ -1,0 +1,64 @@
+.mobileBottomNav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  padding: 10px 0 calc(12px + env(safe-area-inset-bottom));
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.mobileNavItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+  flex: 1;
+}
+
+.mobileNavItem.active {
+  color: var(--primary-color);
+}
+
+.mobileNavIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-speed);
+}
+
+.mobileNavItem.active .mobileNavIcon {
+  background-color: var(--primary-light);
+}
+
+.mobileCartBadge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg-surface);
+}
+
+@media (max-width: 768px) {
+  .mobileBottomNav {
+    display: flex;
+  }
+}
