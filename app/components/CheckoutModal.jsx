@@ -32,7 +32,7 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
 
     setIsSubmitting(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
       const response = await fetch(`${apiUrl}/orders`, {
         method: 'POST',
         headers: {
