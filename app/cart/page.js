@@ -30,7 +30,9 @@ export default function CartPage() {
     removeFromCart,
     totalItems,
     totalPrice,
-    discountAmount,
+    isGiftEligible,
+    giftRemainingAmount,
+    eligibleGroceryTotal,
     finalPrice
   } = useCart();
   const [isCheckoutOpen, setIsCheckoutOpen] = React.useState(false);
@@ -136,7 +138,7 @@ export default function CartPage() {
                   )}
                 </div>
 
-                <div className={styles.itemDetails}>
+                <div className={item.id === 'free-gift-promo' ? `${styles.itemDetails} ${styles.giftDetails}` : styles.itemDetails}>
                   <div className={styles.itemMainInfo}>
                     <h3 className={styles.itemName}>{item.product_name}</h3>
                     <p className={styles.itemUnit}>{item.unit || 'Per Unit'}</p>
@@ -189,10 +191,40 @@ export default function CartPage() {
                 <span>₹{totalPrice.toLocaleString('en-IN')}</span>
               </div>
 
-              {discountAmount > 0 && (
-                <div className={`${styles.summaryRow} ${styles.discountRow}`}>
-                  <span>10% Discount (Orders &gt; ₹2,500)</span>
-                  <span className={styles.discountValue}>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+              {isGiftEligible && (
+                <div className={styles.summaryRow} style={{ color: '#10b981', fontWeight: '700', fontSize: '0.9rem', marginBottom: '8px' }}>
+                  <span>🎁 Free Attractive Gift</span>
+                  <span>INCLUDED</span>
+                </div>
+              )}
+
+              {!isGiftEligible && (
+                <div style={{ 
+                  fontSize: '0.8rem', 
+                  color: '#475569', 
+                  background: '#f1f5f9', 
+                  padding: '10px 12px', 
+                  borderRadius: '8px', 
+                  marginTop: '6px',
+                  marginBottom: '10px',
+                  lineHeight: '1.4'
+                }}>
+                  Add <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> more eligible groceries to unlock your <strong>Free Attractive Gift</strong>!
+                </div>
+              )}
+
+              {!isGiftEligible && totalPrice > eligibleGroceryTotal && (
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: '#b45309',
+                  background: '#fffbeb',
+                  border: '1px solid #fef3c7',
+                  padding: '8px 10px',
+                  borderRadius: '6px',
+                  marginBottom: '10px',
+                  lineHeight: '1.3'
+                }}>
+                  * Note: Refined & oil items (₹{(totalPrice - eligibleGroceryTotal).toLocaleString('en-IN')}) do not count towards the gift offer.
                 </div>
               )}
 
@@ -245,7 +277,8 @@ export default function CartPage() {
         isOpen={isCheckoutOpen}
         onClose={() => setIsCheckoutOpen(false)}
         totalPrice={finalPrice}
-        discountAmount={discountAmount}
+        discountAmount={0}
+        isGiftEligible={isGiftEligible}
         subtotalPrice={totalPrice}
         cartItems={cart}
         onSuccess={(order) => setOrderConfirmed(order)}

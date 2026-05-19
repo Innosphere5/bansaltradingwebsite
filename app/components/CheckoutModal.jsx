@@ -6,7 +6,7 @@ import { X, User, MapPin, Phone, ShoppingBag, Loader2, ArrowRight } from 'lucide
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
 
-export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmount = 0, subtotalPrice, cartItems, onSuccess }) {
+export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmount = 0, isGiftEligible, subtotalPrice, cartItems, onSuccess }) {
   const { clearCart } = useCart();
   const [formData, setFormData] = useState({
     name: '',
@@ -46,7 +46,17 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
           customer_address: formData.address,
           customer_phone: formData.phone,
           total_amount: totalPrice,
-          items: cartItems
+          items: isGiftEligible ? [
+            ...cartItems,
+            {
+              id: 'free-gift-promo',
+              product_name: '🎁 Free Attractive Gift',
+              price: 0,
+              quantity: 1,
+              category: 'Promo',
+              unit: '1 Unit'
+            }
+          ] : cartItems
         }),
       });
 
@@ -193,15 +203,15 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
           </div>
 
           <div className={styles.orderSummary}>
-            {discountAmount > 0 && (
+            {isGiftEligible && (
               <>
                 <div className={styles.summaryRow} style={{ marginBottom: '6px', fontSize: '0.9rem', color: '#64748b' }}>
                   <span>Subtotal</span>
                   <span>₹{subtotalPrice?.toLocaleString('en-IN')}</span>
                 </div>
-                <div className={styles.summaryRow} style={{ marginBottom: '6px', fontSize: '0.9rem', color: '#10b981', fontWeight: '600' }}>
-                  <span>10% Discount Unlocked</span>
-                  <span>- ₹{discountAmount.toLocaleString('en-IN')}</span>
+                <div className={styles.summaryRow} style={{ marginBottom: '8px', fontSize: '0.9rem', color: '#10b981', fontWeight: '700', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span>🎁 Free Attractive Gift</span>
+                  <span>Included</span>
                 </div>
               </>
             )}

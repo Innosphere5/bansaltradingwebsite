@@ -4,16 +4,16 @@ import React from 'react';
 import Header from '../components/Header';
 import MobileNav from '../components/MobileNav';
 import styles from './offers.module.css';
-import { Sparkles, Percent, Gift, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Sparkles, Percent, Gift, ChevronRight, ShoppingBag, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 
 export default function OffersPage() {
-  const { totalPrice } = useCart();
+  const { totalPrice, eligibleGroceryTotal, isGiftEligible, giftRemainingAmount } = useCart();
   const goal = 2500;
-  const progressPercent = Math.min(100, Math.round((totalPrice / goal) * 100));
-  const isUnlocked = totalPrice >= goal;
-  const neededAmount = goal - totalPrice;
+  const progressPercent = Math.min(100, Math.round((eligibleGroceryTotal / goal) * 100));
+  const hasExcludedItems = totalPrice > eligibleGroceryTotal;
+  const excludedAmount = totalPrice - eligibleGroceryTotal;
 
   return (
     <div className={styles.container}>
@@ -21,27 +21,27 @@ export default function OffersPage() {
       
       <main className={styles.main}>
         <div className={styles.hero}>
-          <div className={styles.badge}><Percent size={16} /> Exclusive Wholesale Club</div>
-          <h1>Unlock Business Savings</h1>
-          <p>Maximize your margins with our automatic volume-based deals.</p>
+          <div className={styles.badge}><Gift size={16} /> Exclusive Celebration Club</div>
+          <h1>Unlock Premium Rewards</h1>
+          <p>Maximize your value with our exciting free gift offers.</p>
         </div>
 
         <div className={styles.offersGrid}>
-          {/* Super Interactive Promo Card (₹2500 / 10% Off) */}
-          <div className={`${styles.offerCard} ${styles.superOfferCard} ${isUnlocked ? styles.unlockedCard : ''}`}>
+          {/* Super Interactive Promo Card (₹2500 / Free Gift) */}
+          <div className={`${styles.offerCard} ${styles.superOfferCard} ${isGiftEligible ? styles.unlockedCard : ''}`}>
             <div className={styles.superBadge}>
-              <Sparkles size={14} style={{ marginRight: '6px' }} /> BEST VALUE SITEPARTNER
+              <Sparkles size={14} style={{ marginRight: '6px' }} /> CELEBRATION GIFT
             </div>
             
             <div className={styles.superCardBody}>
               <div className={styles.mainInfo}>
                 <div className={styles.iconWrapper}>
-                  <Percent size={32} className={styles.animatedPercent} />
+                  <Gift size={32} className={styles.animatedPercent} />
                 </div>
                 <div className={styles.superText}>
-                  <h2 className={styles.superTitle}>Shop for ₹2,500, Get 10% OFF Entire Order!</h2>
+                  <h2 className={styles.superTitle}>Free Attractive Gift on Grocery purchases of ₹2,500!</h2>
                   <p className={styles.superDesc}>
-                    Scale up your wholesale purchase. Spend ₹2,500 or more in a single order and a flat 10% discount is applied automatically at checkout!
+                    Add prime grains, flours, brand items, and detergents to your order. Reach ₹2,500 or more in eligible groceries and get a highly attractive gift absolutely FREE at checkout! (Offer excludes refined oil & oil products from the target).
                   </p>
                 </div>
               </div>
@@ -50,38 +50,58 @@ export default function OffersPage() {
               <div className={styles.progressContainer}>
                 <div className={styles.progressLabels}>
                   <span className={styles.progressStatus}>
-                    {isUnlocked ? (
-                      <span className={styles.unlockedText}>🎉 Success! 10% Discount Unlocked</span>
-                    ) : totalPrice > 0 ? (
-                      <span>You're only <strong>₹{neededAmount.toLocaleString('en-IN')}</strong> away!</span>
+                    {isGiftEligible ? (
+                      <span className={styles.unlockedText}>🎉 Success! Free Gift Unlocked!</span>
+                    ) : eligibleGroceryTotal > 0 ? (
+                      <span>You're only <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> away!</span>
                     ) : (
-                      <span>Start shopping to unlock 10% off</span>
+                      <span>Start shopping to unlock a Free Gift</span>
                     )}
                   </span>
                   <span className={styles.progressVal}>
-                    ₹{totalPrice.toLocaleString('en-IN')} / ₹{goal.toLocaleString('en-IN')}
+                    ₹{eligibleGroceryTotal.toLocaleString('en-IN')} / ₹{goal.toLocaleString('en-IN')}
                   </span>
                 </div>
                 
                 <div className={styles.progressBarBg}>
                   <div 
-                    className={`${styles.progressBarFill} ${isUnlocked ? styles.glowingFill : ''}`} 
+                    className={`${styles.progressBarFill} ${isGiftEligible ? styles.glowingFill : ''}`} 
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
 
-                {isUnlocked && totalPrice > 0 && (
+                {!isGiftEligible && hasExcludedItems && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    fontSize: '0.85rem',
+                    color: '#fca5a5',
+                    marginTop: '8px'
+                  }}>
+                    <AlertCircle size={16} style={{ flexShrink: 0, color: '#ef4444' }} />
+                    <span>
+                      Refined & oil items (worth ₹{excludedAmount.toLocaleString('en-IN')}) in your cart do not count towards the gift offer.
+                    </span>
+                  </div>
+                )}
+
+                {isGiftEligible && (
                   <p className={styles.savingsEstimate}>
-                    Instant Savings on checkout: <strong style={{ color: '#10b981' }}>₹{Math.round(totalPrice * 0.1).toLocaleString('en-IN')}</strong>!
+                    Attractive Gift Status: <strong style={{ color: '#10b981' }}>Added to Order!</strong>
                   </p>
                 )}
               </div>
 
               {/* Action Button */}
               <div className={styles.superActionWrapper}>
-                {isUnlocked ? (
+                {isGiftEligible ? (
                   <Link href="/cart" className={styles.superClaimBtnUnlocked}>
-                    View Cart & Claim Now <ChevronRight size={18} />
+                    View Cart & Checkout <ChevronRight size={18} />
                   </Link>
                 ) : (
                   <Link href="/" className={styles.superClaimBtn}>

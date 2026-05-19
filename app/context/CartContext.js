@@ -100,10 +100,29 @@ export function CartProvider({ children }) {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
-  // 10% Discount for orders above ₹2,500
-  const isDiscountEligible = totalPrice >= 2500;
-  const discountAmount = isDiscountEligible ? Math.round(totalPrice * 0.1) : 0;
-  const finalPrice = totalPrice - discountAmount;
+  // Check if item is Refined or Oil
+  const isRefinedOrOilItem = (item) => {
+    const category = (item.category || '').toLowerCase();
+    const name = (item.product_name || '').toLowerCase();
+    return (
+      category.includes('oil') || 
+      category.includes('refined') ||
+      name.includes('oil') ||
+      name.includes('refined')
+    );
+  };
+
+  // Free Gift on purchasing of grocery >= 2500 except refined & oil
+  const eligibleGroceryTotal = cart.reduce((sum, item) => {
+    if (isRefinedOrOilItem(item)) {
+      return sum;
+    }
+    return sum + (parseFloat(item.price) * item.quantity);
+  }, 0);
+
+  const isGiftEligible = eligibleGroceryTotal >= 2500;
+  const giftRemainingAmount = Math.max(0, 2500 - eligibleGroceryTotal);
+  const finalPrice = totalPrice; // No cash discount, total remains same
 
   return (
     <CartContext.Provider value={{ 
@@ -114,8 +133,12 @@ export function CartProvider({ children }) {
       clearCart, 
       totalItems, 
       totalPrice,
-      isDiscountEligible,
-      discountAmount,
+      isGiftEligible,
+      giftRemainingAmount,
+      eligibleGroceryTotal,
+      isRefinedOrOilItem,
+      discountAmount: 0, // Keep for backward compatibility with checkouts
+      isDiscountEligible: false, // Keep for backward compatibility
       finalPrice
     }}>
       {children}

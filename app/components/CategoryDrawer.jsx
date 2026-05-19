@@ -100,9 +100,9 @@ export default function CategoryDrawer() {
           </div>
 
           <div className={styles.promoSection}>
-            <div className={styles.promoBadge}>VOLUME OFFER</div>
-            <h4>Flat 10% OFF</h4>
-            <p>Get flat 10% off automatically on all orders worth ₹2,500 or more!</p>
+            <div className={styles.promoBadge}>GIFT OFFER</div>
+            <h4>Free Attractive Gift!</h4>
+            <p>Get a highly attractive gift FREE on grocery purchases of ₹2,500 or more (excluding refined & oil)!</p>
             <button 
               className={styles.promoBtn}
               onClick={() => {
@@ -113,7 +113,7 @@ export default function CategoryDrawer() {
                 }
               }}
             >
-              Check Progress
+              Check Gift Progress
             </button>
           </div>
         </div>
