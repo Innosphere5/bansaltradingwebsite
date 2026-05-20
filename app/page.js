@@ -7,6 +7,7 @@ import styles from './page.module.css';
 import Header from './components/Header';
 import CategoriesNav from './components/CategoriesNav';
 import ProductCard from './components/ProductCard';
+import CategoryRow from './components/CategoryRow';
 import MobileNav from './components/MobileNav';
 import HeroBanner from './components/HeroBanner';
 import WhyChooseUs from './components/WhyChooseUs';
@@ -59,7 +60,7 @@ export default function WebPanel() {
         }
         const response = await fetch(`${apiUrl}/products?limit=500`);
         const result = await response.json();
-        
+
         if (result.success) {
           setAllProducts(result.data);
           // Initialize quantities
@@ -86,7 +87,7 @@ export default function WebPanel() {
       const catParam = urlParams.get('selectCategory');
       if (catParam) {
         setActiveCategory(catParam);
-        
+
         // Wait until loading finishes, so products are rendered and layout is established
         if (!loading) {
           const timer = setTimeout(() => {
@@ -123,21 +124,21 @@ export default function WebPanel() {
   };
 
   // 1. Filter by Search Query first
-  const searchedProducts = allProducts.filter(p => 
+  const searchedProducts = allProducts.filter(p =>
     p.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
     (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // 2. Then Filter by Category
-  const filteredProducts = activeCategory === "All Items" 
-    ? searchedProducts 
+  const filteredProducts = activeCategory === "All Items"
+    ? searchedProducts
     : searchedProducts.filter(p => p.category === activeCategory);
 
-  // Unified list of categories matching sidebar exactly
-  const dynamicCategories = [
-    "Detergent", "Flours", "Oil", "Refined", "Refined Oil", "Shampoo", "Snacks", "Soap", "Soft Drink"
-  ];
+  // Dynamic list of categories fetched from the database, falling back to standard list
+  const dynamicCategories = categoriesList.length > 0
+    ? categoriesList
+    : ["Chocolate", "Detergent", "Flours", "Oil", "Refined", "Refined Oil", "Shampoo", "Snacks", "Soap", "Soft Drink"];
 
   // If "All Items", we group them
   const categoriesToDisplay = activeCategory === "All Items"
@@ -156,9 +157,9 @@ export default function WebPanel() {
 
   return (
     <div className={styles.container}>
-      <Header 
-        searchQuery={searchQuery} 
-        setSearchQuery={setSearchQuery} 
+      <Header
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
 
       {/* Main Content Area */}
@@ -182,7 +183,7 @@ export default function WebPanel() {
             categories={dynamicCategories}
           />
         </div>
-        
+
         {loading ? (
           <div className={styles.loadingState}>
             <div className={styles.loader}></div>
@@ -196,7 +197,7 @@ export default function WebPanel() {
                 Search Results ({searchedProducts.length} items found)
               </h2>
               {searchedProducts.length > 0 && (
-                <span 
+                <span
                   className={styles.viewAll}
                   style={{ color: 'var(--accent-color)', fontWeight: 'bold', cursor: 'pointer' }}
                   onClick={() => setSearchQuery("")}
@@ -212,11 +213,11 @@ export default function WebPanel() {
             ) : (
               <div className={styles.productGrid}>
                 {searchedProducts.map(product => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    quantity={quantities[product.id]} 
-                    updateQuantity={updateQuantity} 
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    quantity={quantities[product.id]}
+                    updateQuantity={updateQuantity}
                   />
                 ))}
               </div>
@@ -230,30 +231,22 @@ export default function WebPanel() {
           categoriesToDisplay.map(cat => {
             const productsInCat = filteredProducts.filter(p => p.category === cat);
             if (productsInCat.length === 0) return null;
-            
+
             return (
-              <section key={cat} className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <h2 className={styles.sectionTitle}>{cat}</h2>
-                  <span className={styles.viewAll}>View All</span>
-                </div>
-                <div className={styles.productGrid}>
-                  {productsInCat.map(product => (
-                    <ProductCard 
-                      key={product.id} 
-                      product={product} 
-                      quantity={quantities[product.id]} 
-                      updateQuantity={updateQuantity} 
-                    />
-                  ))}
-                </div>
-              </section>
+              <CategoryRow
+                key={cat}
+                title={cat}
+                products={productsInCat}
+                quantities={quantities}
+                updateQuantity={updateQuantity}
+                onSelectCategory={setActiveCategory}
+              />
             );
           })
         )}
 
         <Footer className={styles.fullWidth} />
-        
+
       </main>
 
       <MobileNav />

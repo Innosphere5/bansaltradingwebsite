@@ -1,0 +1,145 @@
+.section {
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+  width: 100%;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.sectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  letter-spacing: -0.02em;
+}
+
+.sectionTitle::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 24px;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-full);
+}
+
+.viewAll {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  cursor: pointer;
+  background-color: #fff7ed;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.viewAll:hover {
+  background-color: #ffedd5;
+  transform: translateX(4px);
+}
+
+.rowWrapper {
+  position: relative;
+  width: 100%;
+  /* Allow arrow buttons to overflow nicely */
+  overflow: visible;
+}
+
+.productRow {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  gap: var(--spacing-lg);
+  /* Added generous bottom padding to prevent hover translation/shadow clipping */
+  padding: var(--spacing-sm) 4px var(--spacing-xl) 4px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  scroll-snap-type: x proximity;
+}
+
+.productRow::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.cardWrapper {
+  flex: 0 0 280px; /* Fixed width for premium desktop card sizing */
+  scroll-snap-align: start;
+  transition: transform var(--transition-speed);
+  height: auto;
+}
+
+/* Glassmorphism nav buttons for desktop */
+.navBtn {
+  position: absolute;
+  top: 42%;
+  transform: translateY(-50%) scale(1);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--text-primary);
+}
+
+.navBtn:hover {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 8px 24px rgba(0, 77, 60, 0.25);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.navBtn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.leftBtn {
+  left: -20px;
+}
+
+.rightBtn {
+  right: -20px;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .section {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .sectionTitle {
+    font-size: 18px;
+  }
+
+  .productRow {
+    gap: var(--spacing-sm);
+    padding: var(--spacing-xs) 2px var(--spacing-lg) 2px;
+  }
+
+  .cardWrapper {
+    flex: 0 0 175px; /* Perfect width for 2 compact cards visible partially on mobile screens */
+  }
+
+  /* Hide navigation arrow buttons on mobile/tablet since swipe gestures are native and superior */
+  .navBtn {
+    display: none !important;
+  }
+}

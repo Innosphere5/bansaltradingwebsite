@@ -250,37 +250,107 @@
 /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
   .productCard {
-    flex-direction: row;
-    gap: var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-sm);
     padding: var(--spacing-sm);
-    height: auto;
-    min-height: auto;
+    height: 100%;
+    min-height: 280px;
+    display: flex;
   }
 
   .productImageWrapper {
-    width: 90px;
-    height: 90px;
-    margin-bottom: 0;
+    width: 100%;
+    height: 100px;
+    margin-bottom: var(--spacing-xs);
     flex-shrink: 0;
   }
 
   .productInfo {
-    gap: 2px;
+    gap: 3px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
   .productTitle {
-    font-size: 14px;
-    -webkit-line-clamp: 1;
+    font-size: 13px;
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+    height: 32px; /* Fixed height for 2 lines to ensure cards align perfectly */
+    margin-bottom: 2px;
+  }
+
+  .variantRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .variantText {
+    font-size: 10px;
+    padding: 1px 6px;
+  }
+
+  .stockStatus {
+    font-size: 10px;
+  }
+
+  .pricingSection {
+    margin-top: auto;
+    padding-top: var(--spacing-xs);
+  }
+
+  .mrpRow {
+    font-size: 9px;
   }
 
   .priceActionRow {
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
+    gap: 6px;
+    margin-top: 2px;
+    width: 100%;
+  }
+
+  .price {
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .currency {
+    font-size: 11px;
   }
 
   .actionArea {
     width: 100%;
-    justify-content: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+    margin-top: 2px;
+  }
+
+  .quantitySelector {
+    min-width: 72px;
+    height: 28px;
+    padding: 1px;
+    flex: 0 0 auto;
+  }
+
+  .qtyBtn {
+    width: 22px;
+    height: 22px;
+  }
+
+  .qtyValue {
+    font-size: 11px;
+  }
+
+  .addBtn {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 11px;
+    gap: 3px;
+    flex: 1;
+    justify-content: center;
   }
 }
