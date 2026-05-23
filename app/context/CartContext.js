@@ -100,28 +100,38 @@ export function CartProvider({ children }) {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
-  // Check if item is Refined or Oil
-  const isRefinedOrOilItem = (item) => {
+  // Check if item is Sugar, Refined or Oil
+  const isExcludedFromOffer = (item) => {
     const category = (item.category || '').toLowerCase();
     const name = (item.product_name || '').toLowerCase();
     return (
       category.includes('oil') || 
       category.includes('refined') ||
+      category.includes('sugar') ||
       name.includes('oil') ||
-      name.includes('refined')
+      name.includes('refined') ||
+      name.includes('sugar')
     );
   };
 
-  // Free Gift on purchasing of grocery >= 2500 except refined & oil
+  // Free Gift on purchasing of grocery >= 2500 except sugar, refined & oil
   const eligibleGroceryTotal = cart.reduce((sum, item) => {
-    if (isRefinedOrOilItem(item)) {
+    if (isExcludedFromOffer(item)) {
       return sum;
     }
     return sum + (parseFloat(item.price) * item.quantity);
   }, 0);
 
-  const isGiftEligible = eligibleGroceryTotal >= 2500;
+  const eligibleItemsCount = cart.reduce((sum, item) => {
+    if (isExcludedFromOffer(item)) {
+      return sum;
+    }
+    return sum + item.quantity;
+  }, 0);
+
+  const isGiftEligible = eligibleGroceryTotal >= 2500 && eligibleItemsCount >= 10;
   const giftRemainingAmount = Math.max(0, 2500 - eligibleGroceryTotal);
+  const giftRemainingItems = Math.max(0, 10 - eligibleItemsCount);
   const finalPrice = totalPrice; // No cash discount, total remains same
 
   return (
@@ -135,8 +145,10 @@ export function CartProvider({ children }) {
       totalPrice,
       isGiftEligible,
       giftRemainingAmount,
+      giftRemainingItems,
       eligibleGroceryTotal,
-      isRefinedOrOilItem,
+      eligibleItemsCount,
+      isExcludedFromOffer,
       discountAmount: 0, // Keep for backward compatibility with checkouts
       isDiscountEligible: false, // Keep for backward compatibility
       finalPrice

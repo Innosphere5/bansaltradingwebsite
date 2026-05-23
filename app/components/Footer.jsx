@@ -2,6 +2,7 @@ import React from 'react';
 import styles from './Footer.module.css';
 import { Phone, Mail, MapPin, Users, Camera, Send } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Footer = ({ className }) => {
   return (
@@ -9,7 +10,10 @@ const Footer = ({ className }) => {
       <div className={styles.container}>
         <div className={styles.mainGrid}>
           <div className={styles.brandSection}>
-            <Link href="/" className={styles.logo}>Bansal Trading</Link>
+            <Link href="/" className={styles.logo}>
+              <Image src="/logo.svg" alt="Bansal Trading" width={40} height={40} style={{ borderRadius: '8px' }} />
+              <span>Bansal Trading</span>
+            </Link>
             <p className={styles.description}>
               Your trusted partner for premium quality groceries at wholesale mandi rates.
               Serving household and business needs with integrity since 1995.

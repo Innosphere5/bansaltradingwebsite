@@ -7,7 +7,7 @@ import { Tag, Sparkles, CheckCircle2, ChevronRight, ShoppingBag, Gift, AlertCirc
 import Link from 'next/link';
 
 export default function SpecialOffer() {
-  const { totalPrice, isGiftEligible, giftRemainingAmount, eligibleGroceryTotal } = useCart();
+  const { totalPrice, isGiftEligible, giftRemainingAmount, giftRemainingItems, eligibleGroceryTotal, eligibleItemsCount } = useCart();
 
   const targetAmount = 2500;
   const progressPercent = Math.min(100, (eligibleGroceryTotal / targetAmount) * 100);
@@ -40,7 +40,7 @@ export default function SpecialOffer() {
             </p>
 
             <p style={{ fontSize: '0.85rem', color: '#fca5a5', marginTop: '-5px', fontWeight: '500' }}>
-              *Please note: Refined oil & oil products are excluded from the ₹2,500 threshold calculation.
+              *Please note: Sugar, refined oil & oil products are excluded from the ₹2,500 threshold calculation and item count.
             </p>
 
             <ul className={styles.benefitsList}>
@@ -68,6 +68,7 @@ export default function SpecialOffer() {
                 </span>
                 <span className={styles.trackerValue}>
                   ₹{eligibleGroceryTotal.toLocaleString('en-IN')} <span className={styles.targetTotal}>/ ₹2,500</span>
+                  <span style={{ marginLeft: '8px', fontSize: '0.8em' }}>| {eligibleItemsCount} <span className={styles.targetTotal}>/ 10 items</span></span>
                 </span>
               </div>
 
@@ -93,7 +94,13 @@ export default function SpecialOffer() {
                 ) : (
                   <div className={styles.lockedBox}>
                     <p className={styles.pendingTxt}>
-                      Add just <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> more eligible groceries to unlock your attractive free gift.
+                      {giftRemainingAmount > 0 && giftRemainingItems > 0 ? (
+                        <>Add just <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> and <strong>{giftRemainingItems}</strong> more eligible items to unlock your attractive free gift.</>
+                      ) : giftRemainingAmount > 0 ? (
+                        <>Add just <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> more eligible groceries to unlock your attractive free gift.</>
+                      ) : giftRemainingItems > 0 ? (
+                        <>Add just <strong>{giftRemainingItems}</strong> more eligible items to unlock your attractive free gift.</>
+                      ) : null}
                     </p>
                     {hasExcludedItems && (
                       <div style={{
@@ -110,7 +117,7 @@ export default function SpecialOffer() {
                       }}>
                         <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '1px', color: '#ef4444' }} />
                         <span>
-                          Refined & oil items (worth ₹{excludedAmount.toLocaleString('en-IN')}) in your cart do not count towards the gift offer.
+                          Sugar, refined & oil items (worth ₹{excludedAmount.toLocaleString('en-IN')}) in your cart do not count towards the gift offer.
                         </span>
                       </div>
                     )}

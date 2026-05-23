@@ -32,7 +32,9 @@ export default function CartPage() {
     totalPrice,
     isGiftEligible,
     giftRemainingAmount,
+    giftRemainingItems,
     eligibleGroceryTotal,
+    eligibleItemsCount,
     finalPrice
   } = useCart();
   const [isCheckoutOpen, setIsCheckoutOpen] = React.useState(false);
@@ -209,7 +211,13 @@ export default function CartPage() {
                   marginBottom: '10px',
                   lineHeight: '1.4'
                 }}>
-                  Add <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> more eligible groceries to unlock your <strong>Free Attractive Gift</strong>!
+                  {giftRemainingAmount > 0 && giftRemainingItems > 0 ? (
+                    <>Add <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> and <strong>{giftRemainingItems} items</strong> more eligible groceries to unlock your <strong>Free Attractive Gift</strong>!</>
+                  ) : giftRemainingAmount > 0 ? (
+                    <>Add <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> more eligible groceries to unlock your <strong>Free Attractive Gift</strong>!</>
+                  ) : giftRemainingItems > 0 ? (
+                    <>Add <strong>{giftRemainingItems} items</strong> more eligible groceries to unlock your <strong>Free Attractive Gift</strong>!</>
+                  ) : null}
                 </div>
               )}
 
@@ -224,7 +232,7 @@ export default function CartPage() {
                   marginBottom: '10px',
                   lineHeight: '1.3'
                 }}>
-                  * Note: Refined & oil items (₹{(totalPrice - eligibleGroceryTotal).toLocaleString('en-IN')}) do not count towards the gift offer.
+                  * Note: Sugar, refined & oil items (₹{(totalPrice - eligibleGroceryTotal).toLocaleString('en-IN')}) do not count towards the gift offer.
                 </div>
               )}
 

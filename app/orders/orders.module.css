@@ -212,3 +212,10 @@
     font-size: 1.1rem;
   }
 }
+
+.userWelcome {
+  font-size: 0.95rem;
+  color: var(--primary-color) !important;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}

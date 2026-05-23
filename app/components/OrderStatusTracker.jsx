@@ -34,7 +34,7 @@ export default function OrderStatusTracker() {
               // Mark as notified immediately
               localStorage.setItem(notifiedKey, 'true');
 
-              toast.success((t) => (
+              toast.success(
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ fontWeight: '800', fontSize: '1.1rem', color: '#064e3b', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ fontSize: '1.3rem' }}>🎉</span> Order Confirmed!
@@ -45,7 +45,7 @@ export default function OrderStatusTracker() {
                   <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
                     <button 
                       onClick={() => {
-                        toast.dismiss(t.id);
+                        toast.dismiss(`order-accepted-${orderId}`);
                         window.location.href = '/orders';
                       }}
                       style={{ 
@@ -64,19 +64,21 @@ export default function OrderStatusTracker() {
                       View Order Details
                     </button>
                   </div>
-                </div>
-              ), {
-                duration: 15000,
-                position: 'top-center',
-                style: {
-                  background: '#f0fdf4',
-                  border: '2px solid #10b981',
-                  borderRadius: '16px',
-                  boxShadow: '0 20px 25px -5px rgba(16, 185, 129, 0.2), 0 10px 10px -5px rgba(16, 185, 129, 0.1)',
-                  minWidth: '320px',
-                  padding: '16px'
+                </div>,
+                {
+                  id: `order-accepted-${orderId}`,
+                  duration: 15000,
+                  position: 'top-center',
+                  style: {
+                    background: '#f0fdf4',
+                    border: '2px solid #10b981',
+                    borderRadius: '16px',
+                    boxShadow: '0 20px 25px -5px rgba(16, 185, 129, 0.2), 0 10px 10px -5px rgba(16, 185, 129, 0.1)',
+                    minWidth: '320px',
+                    padding: '16px'
+                  }
                 }
-              });
+              );
             }
             setLastStatus(myOrder.status);
           }

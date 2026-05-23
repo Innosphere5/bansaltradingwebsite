@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 
 export default function OffersPage() {
-  const { totalPrice, eligibleGroceryTotal, isGiftEligible, giftRemainingAmount } = useCart();
+  const { totalPrice, eligibleGroceryTotal, eligibleItemsCount, isGiftEligible, giftRemainingAmount, giftRemainingItems } = useCart();
   const goal = 2500;
   const progressPercent = Math.min(100, Math.round((eligibleGroceryTotal / goal) * 100));
   const hasExcludedItems = totalPrice > eligibleGroceryTotal;
@@ -18,7 +18,7 @@ export default function OffersPage() {
   return (
     <div className={styles.container}>
       <Header />
-      
+
       <main className={styles.main}>
         <div className={styles.hero}>
           <div className={styles.badge}><Gift size={16} /> Exclusive Celebration Club</div>
@@ -32,16 +32,16 @@ export default function OffersPage() {
             <div className={styles.superBadge}>
               <Sparkles size={14} style={{ marginRight: '6px' }} /> CELEBRATION GIFT
             </div>
-            
+
             <div className={styles.superCardBody}>
               <div className={styles.mainInfo}>
                 <div className={styles.iconWrapper}>
                   <Gift size={32} className={styles.animatedPercent} />
                 </div>
                 <div className={styles.superText}>
-                  <h2 className={styles.superTitle}>Free Attractive Gift on Grocery purchases of ₹2,500!</h2>
+                  <h2 className={styles.superTitle}>Free Attractive Gift on Grocery purchases of ₹2,500! and buy 10 items</h2>
                   <p className={styles.superDesc}>
-                    Add prime grains, flours, brand items, and detergents to your order. Reach ₹2,500 or more in eligible groceries and get a highly attractive gift absolutely FREE at checkout! (Offer excludes refined oil & oil products from the target).
+                    Add prime grains, flours, brand items, and detergents to your order. Reach ₹2,500 and buy 10 items or more in eligible groceries and get a highly attractive gift absolutely FREE at checkout! (Offer excludes Sugar , refined & oil products from the target).
                   </p>
                 </div>
               </div>
@@ -52,20 +52,28 @@ export default function OffersPage() {
                   <span className={styles.progressStatus}>
                     {isGiftEligible ? (
                       <span className={styles.unlockedText}>🎉 Success! Free Gift Unlocked!</span>
-                    ) : eligibleGroceryTotal > 0 ? (
-                      <span>You're only <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> away!</span>
+                    ) : eligibleGroceryTotal > 0 || eligibleItemsCount > 0 ? (
+                      giftRemainingAmount > 0 && giftRemainingItems > 0 ? (
+                        <span>You're only <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> and <strong>{giftRemainingItems} items</strong> away!</span>
+                      ) : giftRemainingAmount > 0 ? (
+                        <span>You're only <strong>₹{giftRemainingAmount.toLocaleString('en-IN')}</strong> away!</span>
+                      ) : giftRemainingItems > 0 ? (
+                        <span>You're only <strong>{giftRemainingItems} items</strong> away!</span>
+                      ) : (
+                        <span>Start shopping to unlock a Free Gift</span>
+                      )
                     ) : (
                       <span>Start shopping to unlock a Free Gift</span>
                     )}
                   </span>
                   <span className={styles.progressVal}>
-                    ₹{eligibleGroceryTotal.toLocaleString('en-IN')} / ₹{goal.toLocaleString('en-IN')}
+                    ₹{eligibleGroceryTotal.toLocaleString('en-IN')} / ₹{goal.toLocaleString('en-IN')} <span style={{ marginLeft: '6px', fontSize: '0.85em' }}>| {eligibleItemsCount} / 10 items</span>
                   </span>
                 </div>
-                
+
                 <div className={styles.progressBarBg}>
-                  <div 
-                    className={`${styles.progressBarFill} ${isGiftEligible ? styles.glowingFill : ''}`} 
+                  <div
+                    className={`${styles.progressBarFill} ${isGiftEligible ? styles.glowingFill : ''}`}
                     style={{ width: `${progressPercent}%` }}
                   />
                 </div>
@@ -85,7 +93,7 @@ export default function OffersPage() {
                   }}>
                     <AlertCircle size={16} style={{ flexShrink: 0, color: '#ef4444' }} />
                     <span>
-                      Refined & oil items (worth ₹{excludedAmount.toLocaleString('en-IN')}) in your cart do not count towards the gift offer.
+                      Sugar, refined & oil items (worth ₹{excludedAmount.toLocaleString('en-IN')}) in your cart do not count towards the gift offer.
                     </span>
                   </div>
                 )}

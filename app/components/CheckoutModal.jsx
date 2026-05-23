@@ -1,19 +1,31 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './CheckoutModal.module.css';
 import { X, User, MapPin, Phone, ShoppingBag, Loader2, ArrowRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmount = 0, isGiftEligible, subtotalPrice, cartItems, onSuccess }) {
   const { clearCart } = useCart();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     phone: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Prefill name from Google account if logged in
+  useEffect(() => {
+    if (isOpen && user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || ''
+      }));
+    }
+  }, [isOpen, user]);
 
   if (!isOpen) return null;
 
@@ -24,7 +36,7 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.address || !formData.phone) {
       toast.error('Please fill in all details');
       return;
@@ -45,6 +57,8 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
           customer_name: formData.name,
           customer_address: formData.address,
           customer_phone: formData.phone,
+          customer_email: user?.email || '',
+          customer_uid: user?.uid || '',
           total_amount: totalPrice,
           items: isGiftEligible ? [
             ...cartItems,
@@ -65,15 +79,15 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
       if (response.ok) {
         localStorage.setItem('lastOrderId', data.order.id);
         localStorage.setItem('customerPhone', formData.phone);
-        
+
         // Clear cart IMMEDIATELY
         clearCart();
-        
+
         // Dismiss any existing "free delivery" or other toasts
         toast.dismiss();
-        
+
         // Premium success notification with action
-        toast.success((t) => (
+        toast.success(
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ fontWeight: '800', fontSize: '1.1rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '1.4rem' }}>🚀</span> Order Sent to Admin!
@@ -81,9 +95,9 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
             <div style={{ fontSize: '0.9rem', color: '#475569', lineHeight: '1.4' }}>
               We've received your request. Our admin will check and confirm your order shortly.
             </div>
-            <button 
+            <button
               onClick={() => {
-                toast.dismiss(t.id);
+                toast.dismiss('checkout-success');
                 window.location.href = '/orders';
               }}
               style={{
@@ -102,24 +116,26 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
             >
               Track Order Status
             </button>
-          </div>
-        ), { 
-          duration: 10000,
-          position: 'top-center',
-          style: {
-            background: '#ffffff',
-            border: '2px solid #e2e8f0',
-            borderRadius: '16px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            minWidth: '320px',
-            padding: '16px'
+          </div>,
+          {
+            id: 'checkout-success',
+            duration: 10000,
+            position: 'top-center',
+            style: {
+              background: '#ffffff',
+              border: '2px solid #e2e8f0',
+              borderRadius: '16px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              minWidth: '320px',
+              padding: '16px'
+            }
           }
-        });
-        
+        );
+
         if (onSuccess) onSuccess(data.order);
-        
+
         setTimeout(() => {
-            onClose();
+          onClose();
         }, 1000);
       } else {
         throw new Error(data.error || 'Failed to place order');
@@ -224,8 +240,8 @@ export default function CheckoutModal({ isOpen, onClose, totalPrice, discountAmo
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className={styles.submitBtn}
             disabled={isSubmitting}
           >

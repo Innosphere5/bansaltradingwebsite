@@ -7,8 +7,10 @@ import styles from './orders.module.css';
 import { Package, Clock, CheckCircle2, Truck, XCircle, PhoneCall, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '../context/AuthContext';
 
 export default function OrdersPage() {
+  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,6 +64,7 @@ export default function OrdersPage() {
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h1>My Order History</h1>
+          {user && <p className={styles.userWelcome}>Logged in as: <strong>{user.name}</strong> ({user.email})</p>}
           <p>Track and view your wholesale orders</p>
         </div>
 
