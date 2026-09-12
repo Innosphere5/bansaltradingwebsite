@@ -55,7 +55,7 @@ export default function CategoryRow({ title, products, quantities, updateQuantit
   };
 
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} scroll-reveal`} data-reveal="true">
       <div className={styles.sectionHeader}>
         <h2 className={styles.sectionTitle}>{title}</h2>
         <span className={styles.viewAll} onClick={() => onSelectCategory && onSelectCategory(title)} style={{ cursor: 'pointer' }}>View All</span>

@@ -6,6 +6,7 @@ import OrderStatusTracker from "./components/OrderStatusTracker";
 import { UIProvider } from "./context/UIContext";
 import CategoryDrawer from "./components/CategoryDrawer";
 import { AuthProvider } from "./context/AuthContext";
+import SmoothScrollProvider from "./components/SmoothScrollProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -398,10 +399,12 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <CartProvider>
             <UIProvider>
-              <Toaster position="top-right" />
-              <OrderStatusTracker />
-              <CategoryDrawer />
-              {children}
+              <SmoothScrollProvider>
+                <Toaster position="top-right" />
+                <OrderStatusTracker />
+                <CategoryDrawer />
+                {children}
+              </SmoothScrollProvider>
             </UIProvider>
           </CartProvider>
         </AuthProvider>

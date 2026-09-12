@@ -9,7 +9,7 @@ const categories = [
 
 const WhyChooseUs = ({ className }) => {
   return (
-    <section className={`${styles.container} ${className || ''}`}>
+    <section className={`${styles.container} ${className || ''} scroll-reveal`} data-reveal="true">
       <div className={styles.sectionHeader}>
         <span className={styles.tagline}>Premium Quality at Mandi Rates</span>
         <h2 className={styles.title}>Why Choose Bansal Trading?</h2>

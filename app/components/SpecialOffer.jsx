@@ -17,7 +17,7 @@ export default function SpecialOffer() {
   const excludedAmount = totalPrice - eligibleGroceryTotal;
 
   return (
-    <section id="special-offer-section" className={styles.wrapper}>
+    <section id="special-offer-section" className={`${styles.wrapper} scroll-reveal`} data-reveal="true">
       <div className={styles.card}>
         {/* Radial Aura Glow */}
         <div className={styles.radialGlow}></div>

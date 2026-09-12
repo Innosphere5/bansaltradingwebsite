@@ -89,6 +89,14 @@
   gap: var(--spacing-lg);
 }
 
+.skeletonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  width: 100%;
+  animation: fadeIn 0.4s ease-out;
+}
+
 .loadingState, .emptyState {
   display: flex;
   flex-direction: column;
@@ -101,6 +109,7 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   margin-top: 0;
+  animation: fadeIn 0.4s ease-out;
 }
 
 .loadingState p, .emptyState p {
@@ -122,6 +131,17 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useDeferredValue, useCallback } from 'react';
 import styles from './page.module.css';
 
 // Import newly created components
@@ -13,6 +13,8 @@ import HeroBanner from './components/HeroBanner';
 import WhyChooseUs from './components/WhyChooseUs';
 import SpecialOffer from './components/SpecialOffer';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
+import { CategoryRowSkeleton, ProductGridSkeleton } from './components/ProductSkeleton';
 import { useUI } from './context/UIContext';
 
 export default function WebPanel() {
@@ -23,12 +25,45 @@ export default function WebPanel() {
   const [quantities, setQuantities] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Deferred search query prevents main-thread stuttering on keystrokes
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const searchParam = params.get("search");
       if (searchParam) {
         setSearchQuery(searchParam);
+      }
+    }
+  }, []);
+
+  // Instant SWR Cache Hydration: Render products immediately (0ms) from cache if available
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const cachedProds = sessionStorage.getItem('bansal_cached_products');
+        const cachedCats = sessionStorage.getItem('bansal_cached_categories');
+        if (cachedProds) {
+          const parsed = JSON.parse(cachedProds);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setAllProducts(parsed);
+            const initialQuantities = {};
+            parsed.forEach(p => {
+              initialQuantities[p.id] = 1;
+            });
+            setQuantities(initialQuantities);
+            setLoading(false);
+          }
+        }
+        if (cachedCats) {
+          const parsedCats = JSON.parse(cachedCats);
+          if (Array.isArray(parsedCats) && parsedCats.length > 0) {
+            setCategoriesList(parsedCats);
+          }
+        }
+      } catch (e) {
+        console.warn("Could not read cached products:", e);
       }
     }
   }, []);
@@ -43,7 +78,13 @@ export default function WebPanel() {
         const response = await fetch(`${apiUrl}/categories`);
         const result = await response.json();
         if (result.success && result.data && result.data.length > 0) {
-          setCategoriesList(result.data.map(c => c.name));
+          const names = result.data.map(c => c.name);
+          setCategoriesList(names);
+          if (typeof window !== "undefined") {
+            try {
+              sessionStorage.setItem('bansal_cached_categories', JSON.stringify(names));
+            } catch (_) {}
+          }
         }
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -53,7 +94,7 @@ export default function WebPanel() {
 
     const fetchProducts = async () => {
       try {
-        setLoading(true);
+        // If we don't have cached products yet, keep loading spinner/skeleton active
         let apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://bansalkaryana-backend.onrender.com/api';
         if (apiUrl && !apiUrl.endsWith('/api') && !apiUrl.endsWith('/api/')) {
           apiUrl = apiUrl.replace(/\/$/, '') + '/api';
@@ -61,14 +102,23 @@ export default function WebPanel() {
         const response = await fetch(`${apiUrl}/products?limit=500`);
         const result = await response.json();
 
-        if (result.success) {
+        if (result.success && Array.isArray(result.data)) {
           setAllProducts(result.data);
-          // Initialize quantities
-          const initialQuantities = {};
-          result.data.forEach(p => {
-            initialQuantities[p.id] = 1;
+          // Initialize quantities without overwriting existing selections
+          setQuantities(prev => {
+            const initial = { ...prev };
+            result.data.forEach(p => {
+              if (!initial[p.id]) initial[p.id] = 1;
+            });
+            return initial;
           });
-          setQuantities(initialQuantities);
+
+          // Cache fresh products in session storage for instant future loads
+          if (typeof window !== "undefined") {
+            try {
+              sessionStorage.setItem('bansal_cached_products', JSON.stringify(result.data));
+            } catch (_) {}
+          }
         }
       } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -105,15 +155,15 @@ export default function WebPanel() {
     }
   }, [loading, setActiveCategory]);
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = useCallback((id, delta) => {
     setQuantities(prev => ({
       ...prev,
       [id]: Math.max(1, (prev[id] || 1) + delta)
     }));
-  };
+  }, []);
 
   // "Shop Wholesale" handler — selects All Items and scrolls to products
-  const handleShopWholesale = () => {
+  const handleShopWholesale = useCallback(() => {
     setActiveCategory("All Items");
     setTimeout(() => {
       const productsSection = document.getElementById('products-start');
@@ -121,29 +171,39 @@ export default function WebPanel() {
         productsSection.scrollIntoView({ behavior: 'smooth' });
       }
     }, 50);
-  };
+  }, [setActiveCategory]);
 
-  // 1. Filter by Search Query first
-  const searchedProducts = allProducts.filter(p =>
-    p.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // 1. High-Performance Memoized Filter by Search Query
+  const searchedProducts = useMemo(() => {
+    const query = deferredSearchQuery.trim().toLowerCase();
+    if (!query) return allProducts;
+    return allProducts.filter(p =>
+      (p.product_name && p.product_name.toLowerCase().includes(query)) ||
+      (p.description && p.description.toLowerCase().includes(query)) ||
+      (p.category && p.category.toLowerCase().includes(query))
+    );
+  }, [allProducts, deferredSearchQuery]);
 
-  // 2. Then Filter by Category
-  const filteredProducts = activeCategory === "All Items"
-    ? searchedProducts
-    : searchedProducts.filter(p => p.category === activeCategory);
+  // 2. Memoized Filter by Category
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === "All Items") return searchedProducts;
+    return searchedProducts.filter(p => p.category === activeCategory);
+  }, [searchedProducts, activeCategory]);
 
   // Dynamic list of categories fetched from the database, falling back to standard list
-  const dynamicCategories = categoriesList.length > 0
-    ? categoriesList
-    : ["Chocolate", "Detergent", "Flours", "Oil", "Refined", "Refined Oil", "Shampoo", "Snacks", "Soap", "Soft Drink"];
+  const dynamicCategories = useMemo(() => {
+    return categoriesList.length > 0
+      ? categoriesList
+      : ["Chocolate", "Detergent", "Flours", "Oil", "Refined", "Refined Oil", "Shampoo", "Snacks", "Soap", "Soft Drink"];
+  }, [categoriesList]);
 
-  // If "All Items", we group them
-  const categoriesToDisplay = activeCategory === "All Items"
-    ? Array.from(new Set(searchedProducts.map(p => p.category).filter(Boolean)))
-    : [activeCategory];
+  // Memoized categories to display
+  const categoriesToDisplay = useMemo(() => {
+    if (activeCategory === "All Items") {
+      return Array.from(new Set(searchedProducts.map(p => p.category).filter(Boolean)));
+    }
+    return [activeCategory];
+  }, [searchedProducts, activeCategory]);
 
   // Auto-scroll to results container when search query is typed
   useEffect(() => {
@@ -184,14 +244,22 @@ export default function WebPanel() {
           />
         </div>
 
+        {/* Skeleton UI Loading States */}
         {loading ? (
-          <div className={styles.loadingState}>
-            <div className={styles.loader}></div>
-            <p>Loading fresh products for you...</p>
+          <div className={styles.skeletonContainer}>
+            {searchQuery.trim() !== "" ? (
+              <ProductGridSkeleton count={8} />
+            ) : (
+              <>
+                <CategoryRowSkeleton cardCount={4} />
+                <CategoryRowSkeleton cardCount={4} />
+                <CategoryRowSkeleton cardCount={4} />
+              </>
+            )}
           </div>
         ) : searchQuery.trim() !== "" ? (
           /* Render search results prominently at the top, ignoring category filters */
-          <section className={styles.section} id="search-results-section">
+          <section className={`${styles.section} scroll-reveal`} data-reveal="true" id="search-results-section">
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>
                 Search Results ({searchedProducts.length} items found)
@@ -249,7 +317,9 @@ export default function WebPanel() {
 
       </main>
 
+      <ScrollToTop />
       <MobileNav />
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, memo } from 'react';
 import styles from './ProductCard.module.css';
 import { 
   Plus, 
@@ -11,8 +11,10 @@ import {
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 
-export default function ProductCard({ product, quantity, updateQuantity }) {
+function ProductCard({ product, quantity, updateQuantity }) {
   const { addToCart, cart } = useCart();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
   
   const cartItem = cart.find(item => item.id === product.id);
   const isInCart = !!cartItem;
@@ -24,7 +26,6 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
   const m = parseFloat(product.mrp || 0);
   const p = parseFloat(product.price || 0);
   const hasDiscount = m > p;
-  const discountPercent = m > 0 ? Math.round(((m - p) / m) * 100) : 0;
   const isLowStock = remainingStock < 50;
 
   const handleAddToCart = () => {
@@ -36,17 +37,30 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
     addToCart(product, nextQty);
   };
 
+  const imageUrl = product.optimized_image_url || product.image_url;
+  const hasImage = !!imageUrl && !imageError;
+
   return (
     <div className={`${styles.productCard} ${isInCart ? styles.isInCart : ''}`}>
       <div className={styles.productImageWrapper}>
-        {product.image_url || product.optimized_image_url ? (
-          <img 
-            src={product.optimized_image_url || product.image_url} 
-            alt={product.product_name}
-            className={styles.productImage}
-          />
+        {hasImage ? (
+          <>
+            {/* Progressive image skeleton shimmer */}
+            {!imageLoaded && (
+              <div className={styles.imageSkeleton} aria-hidden="true" />
+            )}
+            <img 
+              src={imageUrl} 
+              alt={product.product_name}
+              loading="lazy"
+              decoding="async"
+              onLoad={() => setImageLoaded(true)}
+              onError={() => setImageError(true)}
+              className={`${styles.productImage} ${imageLoaded ? styles.imageVisible : styles.imageHidden}`}
+            />
+          </>
         ) : (
-          <ImageIcon size={48} className={styles.placeholderIcon} />
+          <ImageIcon size={44} className={styles.placeholderIcon} />
         )}
         
         {isInCart && (
@@ -58,7 +72,7 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
       
       <div className={styles.productInfo}>
         <div className={styles.categoryBadge}>{product.category}</div>
-        <h3 className={styles.productTitle}>{product.product_name}</h3>
+        <h3 className={styles.productTitle} title={product.product_name}>{product.product_name}</h3>
         
         {product.description && (
           <p className={styles.productDescription}>{product.description}</p>
@@ -66,7 +80,7 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
 
         <div className={styles.variantRow}>
           <span className={styles.variantText}>{product.unit || 'Per Unit'}</span>
-          <div className={`${styles.stockStatus} ${remainingStock === 0 ? styles.lowStock : isLowStock ? styles.lowStock : styles.inStock}`}>
+          <div className={`${styles.stockStatus} ${remainingStock === 0 ? styles.outOfStock : isLowStock ? styles.lowStock : styles.inStock}`}>
             <span className={styles.stockDot}></span>
             {remainingStock === 0 ? 'Out of Stock' : isLowStock ? `Only ${remainingStock} left` : `${remainingStock} in stock`}
           </div>
@@ -116,8 +130,9 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
               <button 
                 className={`${styles.addBtn} ${isInCart ? styles.addMoreBtn : ''}`} 
                 onClick={handleAddToCart}
+                disabled={remainingStock === 0}
               >
-                {isInCart ? <Plus size={16} /> : <ShoppingCart size={16} />}
+                {isInCart ? <Plus size={15} /> : <ShoppingCart size={15} />}
                 <span>{isInCart ? 'Add More' : 'Add'}</span>
               </button>
             </div>
@@ -127,3 +142,6 @@ export default function ProductCard({ product, quantity, updateQuantity }) {
     </div>
   );
 }
+
+export default memo(ProductCard);
+
