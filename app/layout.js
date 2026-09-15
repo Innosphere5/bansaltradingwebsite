@@ -38,6 +38,8 @@ export const metadata = {
     "bansaltradingcompany.store",
     "Bansal karyana store",
     "Bansal wholesale grocery",
+    "Bansal Groceries",
+    "bansal trading company bassi pathana",
 
     // High-volume grocery intent keywords
     "wholesale grocery store near me",
